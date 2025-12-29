@@ -1,4 +1,4 @@
-name: Puzzle 135 Hunter
+name: Puzzle 135 Hunter RDP
 on: workflow_dispatch
 jobs:
   hunt:
@@ -12,10 +12,10 @@ jobs:
           name: p135-checkpoint
           path: C:\Kangaroo
 
-      - name: Start Tailscale (update to OAuth to avoid deprecation warning)
-        uses: tailscale/github-action@v3  # Or v4 with OAuth
+      - name: Start Tailscale
+        uses: tailscale/github-action@v3
         with:
-          authkey: ${{ secrets.TAILSCALE_AUTH_KEY }}  # Switch to OAuth client/secret for future-proofing
+          authkey: ${{ secrets.TAILSCALE_AUTH_KEY }}
 
       - name: Enable RDP + Create User
         run: |
@@ -28,31 +28,22 @@ jobs:
           net localgroup "Remote Desktop Users" rdp /add
           echo "PASS=$pass" >> $env:GITHUB_ENV
 
-      - name: Launch Kangaroo Puzzle 135
+      - name: Launch Kangaroo for Puzzle 135
         run: |
           iwr "https://github.com/JeanLucPons/Kangaroo/releases/download/v2.2/Kangaroo_v2.2_win64.zip" -OutFile k.zip
           Expand-Archive k.zip -DestinationPath C:\Kangaroo
           cd C:\Kangaroo
-          .\Kangaroo.exe -gpu -gpuId auto -d 24 -m 50000000 -w p135.save -wi 30 -ws -wts p135.ts.save -r 4000000000000000000000000000000000000000000000000000000000000000:7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff -p 02145d2611c823a396ef6712ce0f712f09b9b4f3135e3e0aa3230fb9b6d08d1e16
+          .\Kangaroo.exe -gpu -gpuId auto -d 24 -m 80000000 -w p135.save -wi 30 -ws -r 4000000000000000000000000000000000000000000000000000000000000000:7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff -p 02145d2611c823a396ef6712ce0f712f09b9b4f3135e3e0aa3230fb9b6d08d1e16
 
-      - name: Save progress for next run
+      - name: Save progress
         uses: actions/upload-artifact@v4
         with:
           name: p135-checkpoint
           path: C:\Kangaroo\p135.save*
 
-      - name: Show connection info + keep alive
+      - name: Connection info + keep alive
         run: |
           $ip = tailscale ip -4
-          Write-Host "=========================================="
-          Write-Host "RDP READY – Connect via Tailscale!"
-          Write-Host "Tailscale IP : $ip"
-          Write-Host "Username : rdp"
-          Write-Host "Password : $env:PASS"
-          Write-Host "Puzzle 135 Kangaroo running"
-          Write-Host "=========================================="
+          Write-Host "RDP via Tailscale IP: $ip | User: rdp | Pass: $env:PASS"
           Add-Type -AssemblyName System.Windows.Forms
-          while ($true) {
-            [System.Windows.Forms.Cursor]::Position = New-Object System.Drawing.Point((Get-Random -Maximum 1920),(Get-Random -Maximum 1080))
-            Start-Sleep -Seconds 300
-          }
+          while ($true) { [System.Windows.Forms.Cursor]::Position = New-Object System.Drawing.Point((Get-Random -Max 1920),(Get-Random -Max 1080)); Start-Sleep -Seconds 300 }
