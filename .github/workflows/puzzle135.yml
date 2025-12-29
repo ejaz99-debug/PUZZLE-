@@ -36,6 +36,7 @@ jobs:
     Add-LocalGroupMember -Group "Remote Desktop Users" -Member "rdp"
 
     echo "PASS=$pass" >> $env:GITHUB_ENV
+    
       - name: Launch Kangaroo for Puzzle 135
         run: |
           iwr "https://github.com/JeanLucPons/Kangaroo/releases/download/v2.2/Kangaroo_v2.2_win64.zip" -OutFile k.zip
