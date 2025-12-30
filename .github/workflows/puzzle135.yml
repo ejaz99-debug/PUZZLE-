@@ -30,7 +30,7 @@ jobs:
         run: |
           mkdir C:\Kangaroo
           cd C:\Kangaroo
-          iwr "https://github.com/Etayson/Etarkangaroo/releases/download/3.2.4TW/Etarkangaroo3_2_4TW.pb" -OutFile Kangaroo.exe
+          iwr "https://github.com/Etayson/Etarkangaroo/releases/download/v.3.2.5/Etarkangaroo3_2_4TW.pb" -OutFile Kangaroo.exe
           .\Kangaroo.exe -dp 20 -wi 60 -wf p135.hash -kf p135.kang -rb 4000000000000000000000000000000000000000000000000000000000000000 -re 7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff -pub 02145d2611c823a396ef6712ce0f712f09b9b4f3135e3e0aa3230fb9b6d08d1e16
 
       - name: Save progress for next run
