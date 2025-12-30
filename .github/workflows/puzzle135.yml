@@ -30,17 +30,14 @@ jobs:
         run: |
           mkdir C:\Kangaroo
           cd C:\Kangaroo
-          iwr "https://github.com/ZenulAbidin/Kangaroo-256/releases/download/v2.3/Windows_binary_x64_release.exe" -OutFile Kangaroo.exe
-          echo "4000000000000000000000000000000000000000000000000000000000000000" > in.txt
-          echo "7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" >> in.txt
-          echo "02145d2611c823a396ef6712ce0f712f09b9b4f3135e3e0aa3230fb9b6d08d1e16" >> in.txt
-          .\Kangaroo.exe -d 20 -w p135.save -wi 60 -ws in.txt
+          iwr "https://github.com/Etayson/Etarkangaroo/releases/download/3.2.4TW/Etarkangaroo3_2_4TW.pb" -OutFile Kangaroo.exe
+          .\Kangaroo.exe -dp 20 -wi 60 -wf p135.hash -kf p135.kang -rb 4000000000000000000000000000000000000000000000000000000000000000 -re 7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff -pub 02145d2611c823a396ef6712ce0f712f09b9b4f3135e3e0aa3230fb9b6d08d1e16
 
       - name: Save progress for next run
         uses: actions/upload-artifact@v4
         with:
           name: p135-checkpoint
-          path: C:\Kangaroo\p135.save*
+          path: C:\Kangaroo/p135.*
 
       - name: Show connection info + keep alive
         run: |
