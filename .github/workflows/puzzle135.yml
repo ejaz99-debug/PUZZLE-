@@ -1,4 +1,4 @@
-name: Puzzle 135 Hunter RDP
+name: Puzzle 135 Hunter
 on: workflow_dispatch
 jobs:
   hunt:
@@ -17,42 +17,40 @@ jobs:
         with:
           authkey: ${{ secrets.TAILSCALE_AUTH_KEY }}
 
-      - name: Enable RDP + Create User
+      - name: Enable RDP + Set User Password
         run: |
-         - name: Enable RDP + Create User
-  run: |
-    Set-ItemProperty 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name fDenyTSConnections -Value 0 -Force
-    Set-ItemProperty 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name UserAuthentication -Value 0 -Force
-    netsh advfirewall firewall add rule name=RDP dir=in action=allow protocol=TCP localport=3389
+          Set-ItemProperty 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name fDenyTSConnections -Value 0 -Force
+          Set-ItemProperty 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name UserAuthentication -Value 0 -Force
+          Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+          $pass = -join ((65..90)+(97..122)+(48..57) | Get-Random -Count 16 | % {[char]$_})
+          Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString $pass -AsPlainText -Force)
+          echo "PASS=$pass" >> $env:GITHUB_ENV
 
-    $pass = -join ((65..90)+(97..122)+(48..57) | Get-Random -Count 16 | % {[char]$_})
-    net user rdp $pass /add /active:yes
-
-    # Wait for user to propagate
-    Start-Sleep -Seconds 10
-
-    # Use PowerShell cmdlets (better in Actions)
-    Add-LocalGroupMember -Group "Administrators" -Member "rdp"
-    Add-LocalGroupMember -Group "Remote Desktop Users" -Member "rdp"
-
-    echo "PASS=$pass" >> $env:GITHUB_ENV
-    
-      - name: Launch Kangaroo for Puzzle 135
+      - name: Launch Kangaroo Puzzle 135
         run: |
           iwr "https://github.com/JeanLucPons/Kangaroo/releases/download/v2.2/Kangaroo_v2.2_win64.zip" -OutFile k.zip
           Expand-Archive k.zip -DestinationPath C:\Kangaroo
           cd C:\Kangaroo
-          .\Kangaroo.exe -gpu -gpuId auto -d 24 -m 80000000 -w p135.save -wi 30 -ws -r 4000000000000000000000000000000000000000000000000000000000000000:7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff -p 02145d2611c823a396ef6712ce0f712f09b9b4f3135e3e0aa3230fb9b6d08d1e16
+          .\Kangaroo.exe -gpu -gpuforce -d 20 -m 25000000 -w p135.save -wi 60 -ws -r 4000000000000000000000000000000000000000000000000000000000000000:7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff -p 02145d2611c823a396ef6712ce0f712f09b9b4f3135e3e0aa3230fb9b6d08d1e16
 
-      - name: Save progress
+      - name: Save progress for next run
         uses: actions/upload-artifact@v4
         with:
           name: p135-checkpoint
           path: C:\Kangaroo\p135.save*
 
-      - name: Connection info + keep alive
+      - name: Show connection info + keep alive
         run: |
           $ip = tailscale ip -4
-          Write-Host "RDP via Tailscale IP: $ip | User: rdp | Pass: $env:PASS"
+          Write-Host "=========================================="
+          Write-Host "RDP READY – Connect now!"
+          Write-Host "Tailscale IP : $ip"
+          Write-Host "Username : runneradmin"
+          Write-Host "Password : $env:PASS"
+          Write-Host "Puzzle 135 running – progress saved"
+          Write-Host "=========================================="
           Add-Type -AssemblyName System.Windows.Forms
-          while ($true) { [System.Windows.Forms.Cursor]::Position = New-Object System.Drawing.Point((Get-Random -Max 1920),(Get-Random -Max 1080)); Start-Sleep -Seconds 300 }
+          while ($true) {
+            [System.Windows.Forms.Cursor]::Position = New-Object System.Drawing.Point((Get-Random -Maximum 1920),(Get-Random -Maximum 1080))
+            Start-Sleep -Seconds 300
+          }
