@@ -31,7 +31,13 @@ jobs:
           mkdir C:\Kangaroo
           cd C:\Kangaroo
           iwr "https://github.com/JeanLucPons/Kangaroo/releases/download/2.2/Kangaroo.exe" -OutFile Kangaroo.exe
-          .\Kangaroo.exe -t 8 -d 20 -w p135.save -wi 60 -ws -r "4000000000000000000000000000000000000000000000000000000000000000:7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" -p "02145d2611c823a396ef6712ce0f712f09b9b4f3135e3e0aa3230fb9b6d08d1e16"
+          # Create input file with start range, end range, and pubkey
+          @"
+          4000000000000000000000000000000000000000000000000000000000000000
+          7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+          02145d2611c823a396ef6712ce0f712f09b9b4f3135e3e0aa3230fb9b6d08d1e16
+          "@ > in.txt
+          .\Kangaroo.exe -t 8 -d 20 -w p135.save -wi 60 -ws in.txt
 
       - name: Save progress for next run
         uses: actions/upload-artifact@v4
