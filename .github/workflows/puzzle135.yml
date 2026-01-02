@@ -26,21 +26,19 @@ jobs:
           Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString $pass -AsPlainText -Force)
           echo "PASS=$pass" >> $env:GITHUB_ENV
 
-      - name: Build and Launch Kangaroo 256-bit for Puzzle 135
+      - name: Launch Kangaroo 256-bit for Puzzle 135
         run: |
           mkdir C:\Kangaroo
           cd C:\Kangaroo
-          git clone https://github.com/mikorist/Kangaroo-256-bit .
-          # Open the solution and build Release x64 using MSBuild (pre-installed on runners)
-          & "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\MSBuild.exe" "VC_CUDA102\Kangaroo.sln" /p:Configuration=Release /p:Platform=x64 /maxcpucount
+          iwr "https://github.com/ZenulAbidin/Kangaroo-256/releases/download/v2.3/Windows_binary_x64_release" -OutFile Kangaroo.exe
           # Create input file with range and compressed pubkey
           @"
           4000000000000000000000000000000000000000000000000000000000000000
           7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
           02145d2611c823a396ef6712ce0f712f09b9b4f3135e3e0aa3230fb9b6d08d1e16
           "@ > in.txt
-          # Run CPU mode (no CUDA/GPU on GitHub runners)
-          .\Release\kangaroo-256.exe -t 8 -d 20 -w p135.save -wi 60 -ws in.txt
+          # Run CPU mode (no GPU on runners)
+          .\Kangaroo.exe -t 8 -d 20 -w p135.save -wi 60 -ws in.txt
 
       - name: Save progress for next run
         uses: actions/upload-artifact@v4
