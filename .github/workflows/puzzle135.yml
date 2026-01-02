@@ -30,7 +30,7 @@ jobs:
         run: |
           mkdir C:\Kangaroo
           cd C:\Kangaroo
-          iwr "https://github.com/ZenulAbidin/Kangaroo-256/releases/download/v2.3/Windows_binary_x64_release" -OutFile Kangaroo.exe
+          iwr "https://github.com/ZenulAbidin/Kangaroo-256/releases/download/v2.3/Windows%20binary%20x64%20release" -OutFile Kangaroo.exe
           # Create input file with range and compressed pubkey
           @"
           4000000000000000000000000000000000000000000000000000000000000000
