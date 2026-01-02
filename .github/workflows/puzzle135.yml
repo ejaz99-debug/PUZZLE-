@@ -26,19 +26,12 @@ jobs:
           Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString $pass -AsPlainText -Force)
           echo "PASS=$pass" >> $env:GITHUB_ENV
 
-      - name: Launch Kangaroo 256-bit for Puzzle 135
+      - name: Launch Kangaroo Puzzle 135
         run: |
           mkdir C:\Kangaroo
           cd C:\Kangaroo
-          iwr "https://github.com/ZenulAbidin/Kangaroo-256/releases/download/v2.3/Windows%20binary%20x64%20release" -OutFile Kangaroo.exe
-          # Create input file with range and compressed pubkey
-          @"
-          4000000000000000000000000000000000000000000000000000000000000000
-          7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-          02145d2611c823a396ef6712ce0f712f09b9b4f3135e3e0aa3230fb9b6d08d1e16
-          "@ > in.txt
-          # Run CPU mode (no GPU on runners)
-          .\Kangaroo.exe -t 8 -d 20 -w p135.save -wi 60 -ws in.txt
+          iwr "https://github.com/JeanLucPons/Kangaroo/releases/download/2.2/Kangaroo.exe" -OutFile Kangaroo.exe
+          .\Kangaroo.exe -t 8 -d 20 -w p135.save -wi 60 -ws -r "4000000000000000000000000000000000000000000000000000000000000000:7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" -p "02145d2611c823a396ef6712ce0f712f09b9b4f3135e3e0aa3230fb9b6d08d1e16"
 
       - name: Save progress for next run
         uses: actions/upload-artifact@v4
@@ -54,8 +47,7 @@ jobs:
           Write-Host "Tailscale IP : $ip"
           Write-Host "Username : runneradmin"
           Write-Host "Password : $env:PASS"
-          Write-Host "Puzzle 135 Kangaroo (256-bit fork) running on CPU"
-          Write-Host "Progress resumes via artifacts"
+          Write-Host "Puzzle 135 running (CPU mode) – progress saved"
           Write-Host "=========================================="
           Add-Type -AssemblyName System.Windows.Forms
           while ($true) {
